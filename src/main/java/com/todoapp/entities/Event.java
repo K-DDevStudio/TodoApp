@@ -1,4 +1,4 @@
-package entities;
+package com.todoapp.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,26 +10,26 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 //Generates getters for all fields, a useful toString method, and equals and hashCode methods.
 // Also, it generates setters for all non-final fields.
-@AllArgsConstructor
+@Data
 //Generates a constructor with 1 parameter for each field in your class.
-@NoArgsConstructor
+@AllArgsConstructor
 //Generates a no-arguments constructor.
-@Table
+@NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "event")
 public class Event {
 
     @Id
     private Long id;
 
     private String title;
+
     private String description;
 
     private LocalDateTime startDateTime;
+
     private LocalDateTime endDateTime;
-
-
 }
