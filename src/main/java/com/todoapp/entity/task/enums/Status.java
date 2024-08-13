@@ -1,4 +1,4 @@
-package com.todoapp.entities.task.enums;
+package com.todoapp.entity.task.enums;
 
 public enum Status {
     PENDING,

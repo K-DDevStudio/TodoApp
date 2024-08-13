@@ -1,7 +1,7 @@
-package com.todoapp.entities.task;
+package com.todoapp.entity.task;
 
-import com.todoapp.entities.task.enums.Priority;
-import com.todoapp.entities.task.enums.Status;
+import com.todoapp.entity.task.enums.Priority;
+import com.todoapp.entity.task.enums.Status;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

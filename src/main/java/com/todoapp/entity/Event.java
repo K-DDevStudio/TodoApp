@@ -1,4 +1,4 @@
-package com.todoapp.entities;
+package com.todoapp.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
