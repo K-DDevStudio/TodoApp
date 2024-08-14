@@ -1,8 +1,6 @@
 package entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,15 +15,17 @@ import java.time.LocalDateTime;
 //Generates a constructor with 1 parameter for each field in your class.
 @NoArgsConstructor
 //Generates a no-arguments constructor.
-@Table
-@Builder
 @Entity
+@Table(name = "events")
 public class Event {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String description;
 
     private LocalDateTime startDateTime;
