@@ -19,25 +19,30 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("/events")
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     //Sets the HTTP response status to 201 Created if the method completes successfully.
-    // This is a common response code for successful POST requests that result in a resource being created.
+    //This is a common response code for successful POST requests that result in a resource being created.
     public Event createEvent(@RequestBody Event event){
         return eventService.saveEvent(event);
     }
 
-    @GetMapping("/events/{id}")
+    @PostMapping("/{id}")
+    public Event updateEvent(@RequestBody Event event, long id){
+        return eventService.updateEvent(event, id);
+    }
+
+    @GetMapping("/{id}")
     public Optional<Event> getById(@RequestBody Long id){
         return eventService.getEventById(id);
     }
 
-    @GetMapping("/events")
+    @GetMapping("")
     public List<Event> getAll(){
         return eventService.getAllEvents();
     }
 
-    @DeleteMapping("/events/{id}")
+    @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable long id){
         eventService.deleteEvent(id);
     }

@@ -40,7 +40,7 @@ public class EventServiceImpl implements EventService {
         updateEvent.setStartDateTime(event.getStartDateTime());
         updateEvent.setEndDateTime(event.getEndDateTime());
 
-        return null;
+        return eventRepository.save(updateEvent);
     }
 
     @Override
