@@ -1,10 +1,14 @@
 package entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Future;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
@@ -24,11 +28,16 @@ public class Event {
     private Long id;
 
     @Column(nullable = false)
+    @Size(max = 40, message = "Title cannot be longer than 40 characters")
     private String title;
+
     @Column(nullable = false)
     private String description;
 
+    @FutureOrPresent(message = "End date and time cannot be in the past")
     private LocalDateTime startDateTime;
+
+    @Future(message = "End date and time cannot be in the past or present")
     private LocalDateTime endDateTime;
 
 
