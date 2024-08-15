@@ -1,10 +1,8 @@
-package entities;
+package com.todoapp.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.PastOrPresent;
@@ -20,6 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 //Generates a no-arguments constructor.
 @Entity
+@Getter
+@Setter
 @Table(name = "events")
 public class Event {
 
