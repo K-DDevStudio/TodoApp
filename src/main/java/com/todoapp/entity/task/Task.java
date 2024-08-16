@@ -2,21 +2,21 @@ package com.todoapp.entity.task;
 
 import com.todoapp.entity.task.enums.Priority;
 import com.todoapp.entity.task.enums.Status;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
+@Table(name = "tasks")
 public class Task {
 
     @Id
@@ -24,6 +24,8 @@ public class Task {
     private Long id;
 
     @NotEmpty(message = "Title cannot be empty")
+    @Size(max = 20, message = "Title cannot be longer than 20 characters")
+    @Column(length = 20)
     private String title;
 
     private String description;
