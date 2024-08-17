@@ -1,52 +1,111 @@
 package com.todoapp.service;
 
+import com.todoapp.TestDataForEvents;
 import com.todoapp.controller.EventController;
 import com.todoapp.entities.Event;
+import com.todoapp.repository.EventRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
+
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
 
-    //@Mock используется для создания имитации объекта EventService.
-    @Mock
+    @InjectMocks
     private EventService eventService;
 
-    //Аннотация @InjectMocks внедряет все зависимости в объект EventController.
-    @InjectMocks
-    private EventController eventController;
+    @Mock
+    private EventRepository eventRepository;
 
     @Test
     public void testGetAllEvents() {
-        // Arrange
-        Event event1 = new Event();
 
-        event1.setId(1L);
-        event1.setTitle("First Event");
-        event1.setDescription("Description for the first event");
-        event1.setStartDateTime(LocalDateTime.now().plusDays(1));
-        event1.setEndDateTime(LocalDateTime.now().plusDays(2));
+        List<Event> mockEvents = TestDataForEvents.getMockEvents();
 
-        when(eventService.getAllEvents()).thenReturn(singletonList(event1));
+        when(eventRepository.findAll()).thenReturn(mockEvents);
 
-        ResponseEntity<List<Event>> response = eventController.getAll();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(event1, response.getBody().get(0));
+        assertEquals(mockEvents, eventService.getAllEvents());
 
     }
+
+    @Test
+    public void testGetEventById() {
+
+        List<Event> mockEvents = TestDataForEvents.getMockEvents();
+
+        Event eventWithId1L = mockEvents.stream()
+                .filter(event -> event.getId().equals(1L))
+                .findFirst()
+                .orElse(null);
+
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(eventWithId1L));
+
+        assertEquals(eventWithId1L, eventService.getEventById(1L));
+
+    }
+    @Test
+    public void testSaveEvent() {
+
+        List<Event> mockEvents = TestDataForEvents.getMockEvents();
+
+        Event newEvent = mockEvents.get(1);
+
+        when(eventRepository.save(newEvent)).thenReturn(newEvent);
+
+        Event savedEvent = eventService.saveEvent(newEvent);
+
+        assertEquals(newEvent, savedEvent);
+
+    }
+
+    @Test
+    public void testUpdateEvent() {
+
+        List<Event> mockEvents = TestDataForEvents.getMockEvents();
+
+        Event existingEvent  = mockEvents.get(1);
+
+        existingEvent.setTitle("Updated Title");
+        existingEvent.setDescription("Updated Description");
+
+        when(eventRepository.findById(existingEvent.getId())).thenReturn(Optional.of(existingEvent));
+
+        when(eventRepository.save(existingEvent)).thenReturn(existingEvent);
+
+        //??
+        assertEquals(existingEvent, updatedEvent);
+
+    }
+
+    @Test
+    public void testDeleteEvent() {
+
+        List<Event> mockEvents = TestDataForEvents.getMockEvents();
+
+        Event deleteEvent = mockEvents.get(1);
+
+        // Mock the repository's findById method to return the event to be deleted
+        when(eventRepository.findById(deleteEvent.getId())).thenReturn(Optional.of(deleteEvent));
+
+    }
+
 }
