@@ -31,6 +31,7 @@ public class EventControllerTest {
 
     @Test
     public void testGetAllEvents() {
+
         List<Event> mockEvents = TestDataForEvents.getMockEvents();
 
         when(eventService.getAllEvents()).thenReturn(mockEvents);

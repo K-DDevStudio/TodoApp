@@ -72,13 +72,21 @@ public class EventServiceTest {
         List<Event> mockEvents = TestDataForEvents.getMockEvents();
 
         Event existingEvent  = mockEvents.get(1);
+        Event updatedEvent = new Event();
+
+        updatedEvent.setId(existingEvent.getId());
+        updatedEvent.setTitle(existingEvent.getTitle());
+        updatedEvent.setDescription(existingEvent.getDescription());
+        updatedEvent.setStartDateTime(existingEvent.getStartDateTime());
+        updatedEvent.setEndDateTime(existingEvent.getEndDateTime());
+
+        when(eventRepository.findById(existingEvent.getId())).thenReturn(Optional.of(existingEvent));
+        when(eventRepository.save(existingEvent)).thenReturn(existingEvent);
 
         existingEvent.setTitle("Updated Title");
         existingEvent.setDescription("Updated Description");
 
-        when(eventRepository.findById(existingEvent.getId())).thenReturn(Optional.of(existingEvent));
-
-        when(eventRepository.save(existingEvent)).thenReturn(existingEvent);
+        eventService.updateEvent(existingEvent, existingEvent.getId());
 
         //??
         // assertEquals(existingEvent, updatedEvent);
