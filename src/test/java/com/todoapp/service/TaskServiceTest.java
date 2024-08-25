@@ -2,8 +2,7 @@ package com.todoapp.service;
 
 import com.todoapp.dto.TaskRequest;
 import com.todoapp.entity.task.Task;
-import com.todoapp.entity.task.enums.Priority;
-import com.todoapp.entity.task.enums.Status;
+import com.todoapp.exception.TaskNotFoundException;
 import com.todoapp.mapper.TaskMapper;
 import com.todoapp.repository.TaskRepository;
 import jakarta.validation.ConstraintViolation;
@@ -17,12 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.todoapp.test_utils.TestTaskDataFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,15 +56,14 @@ class TaskServiceTest {
 
         @Test
         void shouldReturnListOfTasksWhenTasksExist() {
-            final var task1 = new Task(1L, "Task 1", "Description 1", Priority.HIGH, LocalDate.now(), Status.PENDING);
-            final var task2 = new Task(2L, "Task 2", "Description 2", Priority.MEDIUM, LocalDate.now().plusDays(1), Status.COMPLETED);
-            when(taskRepository.findAll()).thenReturn(List.of(task1, task2));
+            final var mockTasks = createDefaultTaskList(2);
+            when(taskRepository.findAll()).thenReturn(mockTasks);
 
             final var tasks = taskService.getAllTasks();
 
             assertThat(tasks)
                     .hasSize(2)
-                    .containsExactly(task1, task2);
+                    .isEqualTo(mockTasks);
             verify(taskRepository, times(1)).findAll();
         }
     }
@@ -76,7 +73,7 @@ class TaskServiceTest {
 
         @Test
         void shouldReturnTaskWhenFoundById() {
-            final var task = new Task(1L, "Task 1", "Description 1", Priority.HIGH, LocalDate.now(), Status.PENDING);
+            final var task = createDefaultTask();
             when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
             final var foundTask = taskService.getTaskById(1L);
@@ -92,9 +89,8 @@ class TaskServiceTest {
             when(taskRepository.findById(1L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> taskService.getTaskById(1L))
-                    .isInstanceOf(ResponseStatusException.class)
-                    .hasMessageContaining("Task not found with id 1")
-                    .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
+                    .isInstanceOf(TaskNotFoundException.class)
+                    .hasMessageContaining("Task not found with id 1");
             verify(taskRepository, times(1)).findById(1L);
         }
     }
@@ -104,8 +100,8 @@ class TaskServiceTest {
 
         @Test
         void shouldCreateTaskWhenValidRequest() {
-            final var taskRequest = new TaskRequest("Task 1", "Description 1", Priority.HIGH, LocalDate.now(), Status.PENDING);
-            final var task = new Task(1L, "Task 1", "Description 1", Priority.HIGH, LocalDate.now(), Status.PENDING);
+            final var taskRequest = createDefaultTaskRequest();
+            final var task = createDefaultTask();
             when(validator.validate(taskRequest)).thenReturn(Collections.emptySet());
             when(taskMapper.toEntity(taskRequest)).thenReturn(task);
             when(taskRepository.save(any(Task.class))).thenReturn(task);
@@ -120,7 +116,7 @@ class TaskServiceTest {
 
         @Test
         void shouldThrowValidationExceptionWhenRequestIsInvalid() {
-            final var taskRequest = new TaskRequest("Task 1", "Description 1", Priority.HIGH, LocalDate.now(), Status.PENDING);
+            final var taskRequest = createDefaultTaskRequest();
             final ConstraintViolation<TaskRequest> violation = mock(ConstraintViolation.class);
             when(violation.getMessage()).thenReturn("Invalid task request");
             when(validator.validate(taskRequest)).thenReturn(Set.of(violation));
@@ -140,8 +136,8 @@ class TaskServiceTest {
 
         @Test
         void shouldUpdateAndReturnTaskWhenTaskExists() {
-            final var taskRequest = new TaskRequest("Updated Task", "Updated Description", Priority.LOW, LocalDate.now().plusDays(1), Status.IN_PROGRESS);
-            final var task = new Task(1L, "Updated Task", "Updated Description", Priority.LOW, LocalDate.now().plusDays(1), Status.IN_PROGRESS);
+            final var taskRequest = createDefaultTaskRequest();
+            final var task = createDefaultTask();
             when(taskRepository.existsById(1L)).thenReturn(true);
             when(validator.validate(taskRequest)).thenReturn(Collections.emptySet());
             when(taskMapper.toEntity(taskRequest)).thenReturn(task);
@@ -158,19 +154,12 @@ class TaskServiceTest {
 
         @Test
         void shouldThrowResponseStatusExceptionWhenTaskToUpdateDoesNotExist() {
-            final var taskRequest = new TaskRequest(
-                    "Updated Task",
-                    "Updated Description",
-                    Priority.LOW,
-                    LocalDate.now().plusDays(1),
-                    Status.IN_PROGRESS
-            );
+            final var taskRequest = createDefaultTaskRequest();
             when(taskRepository.existsById(1L)).thenReturn(false);
 
             assertThatThrownBy(() -> taskService.updateTask(1L, taskRequest))
-                    .isInstanceOf(ResponseStatusException.class)
-                    .hasMessageContaining("Task not found with id 1")
-                    .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
+                    .isInstanceOf(TaskNotFoundException.class)
+                    .hasMessageContaining("Task not found with id 1");
             verify(taskRepository, times(1)).existsById(1L);
             verify(validator, never()).validate(any());
             verify(taskMapper, never()).toEntity(any());
@@ -184,7 +173,7 @@ class TaskServiceTest {
         @Test
         void shouldDeleteTaskWhenTaskExists() {
             final var taskId = 1L;
-            doNothing().when(taskRepository).deleteById(taskId);
+            when(taskRepository.existsById(any())).thenReturn(true);
 
             taskService.deleteTask(taskId);
 

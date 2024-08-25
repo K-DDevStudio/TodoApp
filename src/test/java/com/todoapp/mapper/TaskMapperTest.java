@@ -1,14 +1,12 @@
 package com.todoapp.mapper;
 
-import com.todoapp.dto.TaskRequest;
 import com.todoapp.entity.task.enums.Priority;
 import com.todoapp.entity.task.enums.Status;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDate;
-
+import static com.todoapp.test_utils.TestTaskDataFactory.createDefaultTaskRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TaskMapperTest {
@@ -20,20 +18,14 @@ class TaskMapperTest {
 
         @Test
         void shouldMapValidTaskRequestToTask() {
-            final var taskRequest = new TaskRequest(
-                    "Title",
-                    "Description",
-                    Priority.HIGH,
-                    LocalDate.now(),
-                    Status.PENDING
-            );
+            final var taskRequest = createDefaultTaskRequest();
 
             final var task = taskMapper.toEntity(taskRequest);
 
             assertThat(task).isNotNull();
-            assertThat(task.getTitle()).isEqualTo("Title");
-            assertThat(task.getDescription()).isEqualTo("Description");
-            assertThat(task.getPriority()).isEqualTo(Priority.HIGH);
+            assertThat(task.getTitle()).isEqualTo("Default Task Name");
+            assertThat(task.getDescription()).isEqualTo("Default Description");
+            assertThat(task.getPriority()).isEqualTo(Priority.MEDIUM);
             assertThat(task.getDeadline()).isEqualTo(taskRequest.deadline());
             assertThat(task.getStatus()).isEqualTo(Status.PENDING);
         }

@@ -2,13 +2,18 @@ package com.todoapp.controller;
 
 import com.todoapp.dto.TaskRequest;
 import com.todoapp.entity.task.Task;
+import com.todoapp.exception.TaskNotFoundException;
 import com.todoapp.service.TaskService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -25,26 +30,50 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable final Long id) {
-        final var task = taskService.getTaskById(id);
-        return ResponseEntity.ok(task);
+        try{
+            final var task = taskService.getTaskById(id);
+            return ResponseEntity.ok(task);
+        } catch (TaskNotFoundException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody final TaskRequest taskRequest) {
-        final var task = taskService.createTask(taskRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    public ResponseEntity<Object> createTask(@RequestBody final TaskRequest taskRequest) {
+        try {
+            final var task = taskService.createTask(taskRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        } catch (ConstraintViolationException ex) {
+            Map<String, String> errors = new HashMap<>();
+            for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable final Long id,
+    public ResponseEntity<Object> updateTask(@PathVariable final Long id,
                                            @RequestBody final TaskRequest taskRequest) {
-        final var updatedTask = taskService.updateTask(id, taskRequest);
-        return ResponseEntity.ok(updatedTask);
+        try {
+            final var updatedTask = taskService.updateTask(id, taskRequest);
+            return ResponseEntity.ok(updatedTask);
+        } catch (ConstraintViolationException ex) {
+            Map<String, String> errors = new HashMap<>();
+            for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable final Long id) {
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        try{
+            taskService.deleteTask(id);
+            return ResponseEntity.noContent().build();
+        } catch (TaskNotFoundException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 }

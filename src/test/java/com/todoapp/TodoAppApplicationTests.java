@@ -14,10 +14,10 @@ class TodoAppApplicationTests {
 
         @Test
         void shouldLoadContext() {
-            String[] args = {};
+            final var args = new String[]{};
 
-            SpringApplicationBuilder builder = new SpringApplicationBuilder(TodoAppApplication.class);
-            ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) builder.run(args);
+            final var builder = new SpringApplicationBuilder(TodoAppApplication.class);
+            final var context = (ServletWebServerApplicationContext) builder.run(args);
 
             assertThat(context).isNotNull();
             assertThat(context.getBean(TodoAppApplication.class)).isNotNull();
@@ -26,9 +26,7 @@ class TodoAppApplicationTests {
 
         @Test
         void shouldNotThrowAnyException() {
-            String[] args = {};
-
-            TodoAppApplication.main(args);
+            TodoAppApplication.main(new String[]{});
         }
     }
 }

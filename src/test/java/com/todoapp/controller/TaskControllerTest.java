@@ -18,8 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import static com.todoapp.test_utils.TestTaskDataFactory.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,24 +43,24 @@ class TaskControllerTest {
 
         @Test
         void shouldReturnTasks() throws Exception {
-            final List<Task> tasks = List.of(new Task(1L, "Title", "Description", Priority.HIGH, LocalDate.now(), Status.PENDING));
+            final var tasks = createDefaultTaskList(1);
             when(taskService.getAllTasks()).thenReturn(tasks);
 
             mockMvc.perform(get("/api/tasks"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$[0].title").value("Title"));
+                    .andExpect(jsonPath("$[0].title").value("Task1"));
         }
 
         @Test
         void shouldReturnTask() throws Exception {
-            final Task task = new Task(1L, "Title", "Description", Priority.HIGH, LocalDate.now(), Status.PENDING);
+            final Task task = createDefaultTask();
             when(taskService.getTaskById(1L)).thenReturn(task);
 
             mockMvc.perform(get("/api/tasks/1"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.title").value("Title"));
+                    .andExpect(jsonPath("$.title").value("Default Task Name"));
         }
     }
 
@@ -69,8 +69,8 @@ class TaskControllerTest {
 
         @Test
         void shouldCreateTask() throws Exception {
-            final TaskRequest taskRequest = new TaskRequest("Title", "Description", Priority.HIGH, LocalDate.now(), Status.PENDING);
-            final Task task = new Task(1L, "Title", "Description", Priority.HIGH, LocalDate.now(), Status.PENDING);
+            final TaskRequest taskRequest = createDefaultTaskRequest();
+            final Task task = createDefaultTask();
             when(taskService.createTask(taskRequest)).thenReturn(task);
 
             mockMvc.perform(post("/api/tasks")
@@ -78,13 +78,13 @@ class TaskControllerTest {
                             .content(objectMapper.writeValueAsString(taskRequest)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.title").value("Title"));
+                    .andExpect(jsonPath("$.title").value("Default Task Name"));
         }
 
         @Test
         void shouldUpdateTask() throws Exception {
-            final TaskRequest taskRequest = new TaskRequest("Updated Title", "Updated Description", Priority.MEDIUM, LocalDate.now(), Status.COMPLETED);
-            final Task updatedTask = new Task(1L, "Updated Title", "Updated Description", Priority.MEDIUM, LocalDate.now(), Status.COMPLETED);
+            final TaskRequest taskRequest = createDefaultTaskRequest();
+            final Task updatedTask = createTask(1L, "Updated Title", "Updated Description", Priority.MEDIUM, LocalDate.now(), Status.COMPLETED);
             when(taskService.updateTask(1L, taskRequest)).thenReturn(updatedTask);
 
             mockMvc.perform(put("/api/tasks/1")

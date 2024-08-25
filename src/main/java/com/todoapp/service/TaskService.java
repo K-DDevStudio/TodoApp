@@ -2,12 +2,11 @@ package com.todoapp.service;
 
 import com.todoapp.dto.TaskRequest;
 import com.todoapp.entity.task.Task;
+import com.todoapp.exception.TaskNotFoundException;
 import com.todoapp.mapper.TaskMapper;
 import com.todoapp.repository.TaskRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class TaskService {
 
     public Task getTaskById(final Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with id " + id));
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task createTask(@Valid final TaskRequest taskCreateRequest) {
@@ -46,7 +45,7 @@ public class TaskService {
     public Task updateTask(final Long id,
                            @Valid final TaskRequest updatedTask) {
         if (!taskRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with id " + id);
+            throw new TaskNotFoundException(id);
         }
         validateTaskRequest(updatedTask);
         final var task = taskMapper.toEntity(updatedTask);
@@ -55,6 +54,9 @@ public class TaskService {
     }
 
     public void deleteTask(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new TaskNotFoundException(id);
+        }
         taskRepository.deleteById(id);
     }
 
