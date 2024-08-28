@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.todoapp.service.EventService;
-import com.todoapp.entities.Event;
-import org.springframework.http.HttpStatus;
+import com.todoapp.entity.Event;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/events")

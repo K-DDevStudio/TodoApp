@@ -1,22 +1,16 @@
 package com.todoapp.controller;
 
 import com.todoapp.TestDataForEvents;
-import com.todoapp.TodoAppApplication;
-import com.todoapp.entities.Event;
-import com.todoapp.repository.EventRepository;
+import com.todoapp.entity.Event;
 import com.todoapp.service.EventService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -94,6 +88,7 @@ public class EventControllerTest {
 
     @Test
     public void testUpdateEvent() {
+
         List<Event> mockEvents = TestDataForEvents.getMockEvents();
 
         Event existingEventWithId1L = mockEvents.stream()
@@ -103,11 +98,15 @@ public class EventControllerTest {
 
         // The updated event data
         Event updatedEventData = new Event();
-        updatedEventData.setId(1L);
+
+        updatedEventData.setId(existingEventWithId1L.getId());
+        updatedEventData.setTitle(existingEventWithId1L.getTitle());
+        updatedEventData.setDescription(existingEventWithId1L.getDescription());
+        updatedEventData.setStartDateTime(existingEventWithId1L.getStartDateTime());
+        updatedEventData.setEndDateTime(existingEventWithId1L.getEndDateTime());
+
         updatedEventData.setTitle("Updated Event");
         updatedEventData.setDescription("Updated Description");
-        updatedEventData.setStartDateTime(LocalDateTime.now().plusDays(3));
-        updatedEventData.setEndDateTime(LocalDateTime.now().plusDays(5));
 
         when(eventService.updateEvent(updatedEventData, 1L)).thenReturn(updatedEventData);
 

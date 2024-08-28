@@ -1,15 +1,13 @@
 package com.todoapp.service;
 
-import com.todoapp.entities.Event;
+import com.todoapp.entity.Event;
 import com.todoapp.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.ws.rs.NotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

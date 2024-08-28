@@ -1,6 +1,6 @@
 package com.todoapp;
 
-import com.todoapp.entities.Event;
+import com.todoapp.entity.Event;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

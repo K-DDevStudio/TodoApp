@@ -1,7 +1,7 @@
 package com.todoapp.service;
 
+import com.todoapp.entity.Event;
 import com.todoapp.TestDataForEvents;
-import com.todoapp.entities.Event;
 import com.todoapp.repository.EventRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +71,7 @@ public class EventServiceTest {
 
         List<Event> mockEvents = TestDataForEvents.getMockEvents();
 
-        Event existingEvent  = mockEvents.get(1);
+        Event existingEvent  = mockEvents.getFirst();
         Event updatedEvent = new Event();
 
         updatedEvent.setId(existingEvent.getId());
@@ -80,29 +80,22 @@ public class EventServiceTest {
         updatedEvent.setStartDateTime(existingEvent.getStartDateTime());
         updatedEvent.setEndDateTime(existingEvent.getEndDateTime());
 
+        updatedEvent.setTitle("Updated Title");
+        updatedEvent.setDescription("Updated Description");
+
         when(eventRepository.findById(existingEvent.getId())).thenReturn(Optional.of(existingEvent));
-        when(eventRepository.save(existingEvent)).thenReturn(existingEvent);
+        when(eventRepository.save(updatedEvent)).thenReturn(updatedEvent);
 
-        existingEvent.setTitle("Updated Title");
-        existingEvent.setDescription("Updated Description");
-
-        eventService.updateEvent(existingEvent, existingEvent.getId());
-
-        //??
-        // assertEquals(existingEvent, updatedEvent);
+        Event result = eventService.updateEvent(updatedEvent, 1L);
+        assertEquals(updatedEvent, result);
 
     }
 
     @Test
     public void testDeleteEvent() {
+        eventService.deleteEvent(1L);
 
-        List<Event> mockEvents = TestDataForEvents.getMockEvents();
-
-        Event deleteEvent = mockEvents.get(1);
-
-        // Mock the repository's findById method to return the event to be deleted
-        when(eventRepository.findById(deleteEvent.getId())).thenReturn(Optional.of(deleteEvent));
-
+        verify(eventRepository, times(1)).deleteById(1L);
     }
 
 }
