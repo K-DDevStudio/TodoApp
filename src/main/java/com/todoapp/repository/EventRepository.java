@@ -1,6 +1,6 @@
 package com.todoapp.repository;
 
-import com.todoapp.entities.Event;
+import com.todoapp.entity.task.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

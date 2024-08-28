@@ -1,18 +1,17 @@
 package com.todoapp.service;
 
 import com.todoapp.controller.EventController;
-import com.todoapp.entities.Event;
-import org.junit.jupiter.api.BeforeAll;
+import com.todoapp.entity.task.Event;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
+
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -20,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
 
     //@Mock используется для создания имитации объекта EventService.

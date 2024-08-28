@@ -1,4 +1,4 @@
-package com.todoapp.entities;
+package com.todoapp.entity.task;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
